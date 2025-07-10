@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Demo Joystick</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Three.js module (untuk import di JS juga, tetap harus) -->
+  <script type="module" src="./js/main.js"></script>
+  <!-- NippleJS untuk joystick -->
+  <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #222; }
+    #joystick-zone { position: fixed; left: 20px; bottom: 20px; width: 120px; height: 120px; z-index: 99; }
+    #container { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="joystick-zone"></div>
+</body>
+</html>

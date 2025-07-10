@@ -9,9 +9,10 @@ scene.background = new THREE.Color(0x222244);
 
 // KAMERA
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(9, 7, 17);
+camera.position.set(10, 7, 17);
 camera.lookAt(4, 1.2, 0);
 
+// RENDERER
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('container').appendChild(renderer.domElement);
@@ -25,9 +26,8 @@ controls.minDistance = 7;
 controls.maxDistance = 30;
 controls.target.set(4, 1.2, 0);
 
-// LANTAI REALISTIK
+// LANTAI
 const textureLoader = new THREE.TextureLoader();
-
 const floorTexture = textureLoader.load('https://threejs.org/examples/textures/uv_grid_opengl.jpg');
 floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
 floorTexture.repeat.set(10, 10);
@@ -56,112 +56,105 @@ const gridHelper = new THREE.GridHelper(floorSize, 20, 0xffffff, 0x888888);
 gridHelper.position.y = 0.01;
 scene.add(gridHelper);
 
-const floorLight = new THREE.DirectionalLight(0xffffff, 0.4);
-floorLight.position.set(0, 10, 0);
-scene.add(floorLight);
+// Pencahayaan dasar
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+dirLight.position.set(7, 13, 7);
+scene.add(dirLight);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-
-// MODEL MANUSIA - posisi pas di atas lantai
+// MODEL KARAKTER (tetap berdiri di atas lantai)
 const human = createHumanModel();
-human.position.set(0, 1, 0); // y=1, pas di atas lantai
+human.position.set(0, 1, 0);
 scene.add(human);
 
-// RUMAH REALISTIK SEDERHANA (proporsi besar, pintu/jendela proporsional, dekat karakter)
+// RUMAH PROPORSIONAL, DEKAT KARAKTER
 const rumah = new THREE.Group();
-
-const rumahPosX = 7; // Tidak terlalu jauh dari karakter, di sisi kanan
+const rumahPosX = 8; // Tidak terlalu jauh dari karakter
 
 // Dinding depan
 const tembokDepan = new THREE.Mesh(
-  new THREE.BoxGeometry(7, 4, 0.2),
+  new THREE.BoxGeometry(8, 4.5, 0.2),
   new THREE.MeshStandardMaterial({ color: 0xf6e3b4 })
 );
-tembokDepan.position.set(rumahPosX, 2, 3.5);
+tembokDepan.position.set(rumahPosX, 2.25, 3.9);
 rumah.add(tembokDepan);
 
 // Dinding belakang
 const tembokBelakang = new THREE.Mesh(
-  new THREE.BoxGeometry(7, 4, 0.2),
+  new THREE.BoxGeometry(8, 4.5, 0.2),
   new THREE.MeshStandardMaterial({ color: 0xf6e3b4 })
 );
-tembokBelakang.position.set(rumahPosX, 2, -3.5);
+tembokBelakang.position.set(rumahPosX, 2.25, -3.9);
 rumah.add(tembokBelakang);
 
 // Dinding kiri
 const tembokKiri = new THREE.Mesh(
-  new THREE.BoxGeometry(0.2, 4, 7),
+  new THREE.BoxGeometry(0.2, 4.5, 8),
   new THREE.MeshStandardMaterial({ color: 0xe4cb9c })
 );
-tembokKiri.position.set(rumahPosX - 3.5, 2, 0);
+tembokKiri.position.set(rumahPosX - 4, 2.25, 0);
 rumah.add(tembokKiri);
 
 // Dinding kanan
 const tembokKanan = new THREE.Mesh(
-  new THREE.BoxGeometry(0.2, 4, 7),
+  new THREE.BoxGeometry(0.2, 4.5, 8),
   new THREE.MeshStandardMaterial({ color: 0xe4cb9c })
 );
-tembokKanan.position.set(rumahPosX + 3.5, 2, 0);
+tembokKanan.position.set(rumahPosX + 4, 2.25, 0);
 rumah.add(tembokKanan);
 
 // LANTAI RUMAH
 const lantaiRumah = new THREE.Mesh(
-  new THREE.BoxGeometry(7.1, 0.15, 7.1),
+  new THREE.BoxGeometry(8.1, 0.15, 8.1),
   new THREE.MeshStandardMaterial({ color: 0xcbb893 })
 );
 lantaiRumah.position.set(rumahPosX, 0.075, 0);
 rumah.add(lantaiRumah);
 
-// ATAP RUMAH (pelana, lebih besar)
+// ATAP RUMAH (pelana, proporsional)
 const atapKiri = new THREE.Mesh(
-  new THREE.BoxGeometry(7.5, 0.25, 3.7),
+  new THREE.BoxGeometry(8.6, 0.25, 4.3),
   new THREE.MeshStandardMaterial({ color: 0xa55722 })
 );
-atapKiri.position.set(rumahPosX, 4.3, -1.85);
+atapKiri.position.set(rumahPosX, 4.8, -2.15);
 atapKiri.rotation.x = Math.PI / 8;
 rumah.add(atapKiri);
 
 const atapKanan = new THREE.Mesh(
-  new THREE.BoxGeometry(7.5, 0.25, 3.7),
+  new THREE.BoxGeometry(8.6, 0.25, 4.3),
   new THREE.MeshStandardMaterial({ color: 0xa55722 })
 );
-atapKanan.position.set(rumahPosX, 4.3, 1.85);
+atapKanan.position.set(rumahPosX, 4.8, 2.15);
 atapKanan.rotation.x = -Math.PI / 8;
 rumah.add(atapKanan);
 
-// PINTU (proporsional, ~1/3 tinggi rumah)
+// PINTU (proporsional ~1/3 tinggi rumah)
 const pintu = new THREE.Mesh(
-  new THREE.BoxGeometry(1.3, 2.5, 0.13),
+  new THREE.BoxGeometry(1.5, 2.7, 0.13),
   new THREE.MeshStandardMaterial({ color: 0x885533 })
 );
-pintu.position.set(rumahPosX, 1.25, 3.61);
+pintu.position.set(rumahPosX, 1.35, 4.01);
 rumah.add(pintu);
 
-// JENDELA KIRI DEPAN (proporsional, tinggi sekitar 1m)
+// JENDELA DEPAN KIRI
 const jendelaKiri = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 0.11),
+  new THREE.BoxGeometry(1.2, 1.2, 0.11),
   new THREE.MeshStandardMaterial({ color: 0x99ccff, transparent: true, opacity: 0.7 })
 );
-jendelaKiri.position.set(rumahPosX - 2, 2.4, 3.61);
+jendelaKiri.position.set(rumahPosX - 2.5, 2.7, 4.01);
 rumah.add(jendelaKiri);
 
-// JENDELA KANAN DEPAN
+// JENDELA DEPAN KANAN
 const jendelaKanan = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 0.11),
+  new THREE.BoxGeometry(1.2, 1.2, 0.11),
   new THREE.MeshStandardMaterial({ color: 0x99ccff, transparent: true, opacity: 0.7 })
 );
-jendelaKanan.position.set(rumahPosX + 2, 2.4, 3.61);
+jendelaKanan.position.set(rumahPosX + 2.5, 2.7, 4.01);
 rumah.add(jendelaKanan);
 
 scene.add(rumah);
 
-// LAMPU UTAMA
-scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
-dirLight.position.set(5, 10, 7);
-scene.add(dirLight);
-
-// JOYSTICK
+// JOYSTICK (tetap terhubung)
 const joystick = nipplejs.create({
   zone: document.getElementById('joystick-zone'),
   mode: 'static',

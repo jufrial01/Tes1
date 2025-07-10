@@ -9,7 +9,7 @@ export function setupMovementWithJoystick(obj, joystick) {
   joystick.on('move', function(evt, data) {
     const angle = data.angle ? data.angle.radian : 0;
     const force = data.force || 0;
-    moveVector.x = Math.sin(angle) * force * 0.15; // Atur multiplier untuk kecepatan
+    moveVector.x = Math.sin(angle) * force * 0.15;
     moveVector.z = -Math.cos(angle) * force * 0.15;
   });
 
